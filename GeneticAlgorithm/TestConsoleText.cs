@@ -4,25 +4,31 @@ using System.Text;
 
 namespace GeneticAlgorithm
 {
-    public class TestShakespeare
+    public class TestConsoleText
     {
-        string targetString = "To be, or not to be, that is the question.";
+        string targetString;
         string validCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.|!#$%&/()=? ";
         int populationSize = 200;
         float mutationRate = 0.01f;
         int elitism = 5;
         
         int numCharsPerText = 15000;
-        string targetText;
-        string bestText;
-        string bestFitnessText;
-        string numGenerationsText;
-        string textPrefab;
+
+        private int numCharsPerTextObj;
+        private List<string> textList = new List<string>();
 
         private GeneticAlgorithm<char> ga;
         private Random random;
 
+        private bool verbose;
         public bool Enabled { get; set; }
+
+
+        public TestConsoleText(string text, bool verbose = true)
+        {
+            this.verbose = verbose;
+            targetString = text;
+        }
 
         public void Start()
         {
@@ -37,13 +43,14 @@ namespace GeneticAlgorithm
 
             UpdateText(ga.BestGenes, ga.BestFitness, ga.Generation, ga.Population.Count, (j) => ga.Population[j].Genes);
 
-
-            Console.Clear();
-            Console.WriteLine("Best genes: {0}", new string(ga.BestGenes));
-
-            Console.WriteLine("Best fitness: {0}", ga.BestFitness);
-            Console.WriteLine("Best generation: {0}", ga.Generation);
-            Console.WriteLine("Population: {0}", ga.Population.Count);
+            if(verbose)
+            {
+                Console.Clear();
+                WriteColor("Best genes", new string(ga.BestGenes));
+                WriteColor("Best fitness", ga.BestFitness.ToString(), ColorMapper(ga.BestFitness));
+                WriteColor("Generation", ga.Generation.ToString());
+                WriteColor("Population", ga.Population.Count.ToString());
+            }
 
             if (ga.BestFitness == 1)
             {
@@ -77,10 +84,7 @@ namespace GeneticAlgorithm
             return score;
         }
 
-        private int numCharsPerTextObj;
-        private List<string> textList = new List<string>();
-
-        public void Awake()
+        public void Initialize()
         {
             numCharsPerTextObj = numCharsPerText / validCharacters.Length;
             if (numCharsPerTextObj > populationSize) numCharsPerTextObj = populationSize;
@@ -89,17 +93,12 @@ namespace GeneticAlgorithm
 
             for (int i = 0; i < numTextObjects; i++)
             {
-                textList.Add(textPrefab);
+                textList.Add("");
             }
         }
 
         private void UpdateText(char[] bestGenes, float bestFitness, int generation, int populationSize, Func<int, char[]> getGenes)
         {
-            bestText = CharArrayToString(bestGenes);
-            bestFitnessText = bestFitness.ToString();
-
-            numGenerationsText = generation.ToString();
-
             for (int i = 0; i < textList.Count; i++)
             {
                 var sb = new StringBuilder();
@@ -117,15 +116,45 @@ namespace GeneticAlgorithm
             }
         }
 
-        private string CharArrayToString(char[] charArray)
+        private ConsoleColor ColorMapper(float fitness)
         {
-            var sb = new StringBuilder();
-            foreach (var c in charArray)
+            if(fitness < 0.2)
             {
-                sb.Append(c);
+                return ConsoleColor.DarkRed;
             }
-
-            return sb.ToString();
+            else if (fitness < 0.4)
+            {
+                return ConsoleColor.Red;
+            }
+            else if (fitness < 0.6)
+            {
+                return ConsoleColor.DarkYellow;
+            }
+            else if (fitness < 0.8)
+            {
+                return ConsoleColor.Yellow;
+            }
+            else if (fitness < 1.0)
+            {
+                return ConsoleColor.DarkGreen;
+            }
+            else
+            {
+                return ConsoleColor.Green;
+            }
+        }
+        private void WriteColor(string key)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            Console.Write(key + ": ");
+            Console.ResetColor();
+        }
+        private void WriteColor(string key, string value, ConsoleColor color = ConsoleColor.White)
+        {
+            WriteColor(key);
+            Console.ForegroundColor = color;
+            Console.WriteLine(value);
+            Console.ResetColor();
         }
     }
 }

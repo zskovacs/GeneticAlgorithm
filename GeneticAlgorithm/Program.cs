@@ -6,16 +6,14 @@ namespace GeneticAlgorithm
     {
         static void Main(string[] args)
         {
-            var ga = new TestShakespeare();
+            var ga = new TestConsoleText("To be, or not to be, that is the question.");
 
-            ga.Awake();
+            ga.Initialize();
             ga.Start();
             while(ga.Enabled)
             {
                 ga.Update();
             }
-            
-
             Console.ReadLine();
         }
     }
