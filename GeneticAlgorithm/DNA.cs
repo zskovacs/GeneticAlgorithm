@@ -30,6 +30,11 @@ namespace GeneticAlgorithm
             }
         }
 
+        /// <summary>
+        /// Save the fitness of the individual
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public float CalculateFitness(int index)
         {
             Fitness = fitnessFunction(index);
@@ -55,7 +60,7 @@ namespace GeneticAlgorithm
         }
 
         /// <summary>
-        /// We are mutating the gene
+        /// We are mutating the gene, (after parent1 + parent2 = child -> mutating)
         /// </summary>
         /// <param name="mutationRate"></param>
         public void Mutate(float mutationRate)

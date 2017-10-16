@@ -48,6 +48,7 @@ namespace GeneticAlgorithm
 
             for (int i = 0; i < Population.Count; i++)
             {
+                // we keep the 5 best individual (the list is sorted)
                 if (i < Elitism)
                 {
                     newPopulation.Add(Population[i]);
@@ -65,6 +66,7 @@ namespace GeneticAlgorithm
                 }
             }
 
+            //Memory optimization (we dont have to always create a new list)
             List<DNA<T>> tmpList = Population;
             Population = newPopulation;
             newPopulation = tmpList;
@@ -72,7 +74,7 @@ namespace GeneticAlgorithm
             Generation++;
         }
 
-        public int CompareDNA(DNA<T> a, DNA<T> b)
+        private int CompareDNA(DNA<T> a, DNA<T> b)
         {
             if (a.Fitness > b.Fitness)
             {
@@ -88,7 +90,7 @@ namespace GeneticAlgorithm
             }
         }
 
-        public void CalculateFitness()
+        private void CalculateFitness()
         {
             fitnessSum = 0;
             DNA<T> best = Population[0];

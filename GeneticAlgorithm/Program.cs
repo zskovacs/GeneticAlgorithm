@@ -8,7 +8,6 @@ namespace GeneticAlgorithm
         {
             var ga = new TestConsoleText("To be, or not to be, that is the question.");
 
-            ga.Initialize();
             ga.Start();
             while(ga.Enabled)
             {

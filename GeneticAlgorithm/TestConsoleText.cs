@@ -6,23 +6,18 @@ namespace GeneticAlgorithm
 {
     public class TestConsoleText
     {
-        string targetString;
         string validCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.|!#$%&/()=? ";
         int populationSize = 200;
         float mutationRate = 0.01f;
-        int elitism = 5;
-        
-        int numCharsPerText = 15000;
+        int elitism = 5; // Keep the best 5
 
-        private int numCharsPerTextObj;
-        private List<string> textList = new List<string>();
+        private string targetString; // The desired child
+        private bool verbose;
 
         private GeneticAlgorithm<char> ga;
         private Random random;
 
-        private bool verbose;
-        public bool Enabled { get; set; }
-
+        public bool Enabled { get; private set; }
 
         public TestConsoleText(string text, bool verbose = true)
         {
@@ -41,21 +36,11 @@ namespace GeneticAlgorithm
         {
             ga.NewGeneration();
 
-            UpdateText(ga.BestGenes, ga.BestFitness, ga.Generation, ga.Population.Count, (j) => ga.Population[j].Genes);
-
-            if(verbose)
-            {
-                Console.Clear();
-                WriteColor("Best genes", new string(ga.BestGenes));
-                WriteColor("Best fitness", ga.BestFitness.ToString(), ColorMapper(ga.BestFitness));
-                WriteColor("Generation", ga.Generation.ToString());
-                WriteColor("Population", ga.Population.Count.ToString());
-            }
+            if (verbose)
+                UpdateUserInterface();
 
             if (ga.BestFitness == 1)
-            {
                 Enabled = false;
-            }
         }
 
         private char GetRandomCharacter()
@@ -63,7 +48,6 @@ namespace GeneticAlgorithm
             int i = random.Next(validCharacters.Length);
             return validCharacters[i];
         }
-
         private float FitnessFunction(int index)
         {
             float score = 0;
@@ -84,41 +68,19 @@ namespace GeneticAlgorithm
             return score;
         }
 
-        public void Initialize()
+        private void UpdateUserInterface()
         {
-            numCharsPerTextObj = numCharsPerText / validCharacters.Length;
-            if (numCharsPerTextObj > populationSize) numCharsPerTextObj = populationSize;
 
-            int numTextObjects = (int)Math.Ceiling((float)populationSize / numCharsPerTextObj);
+            Console.Clear();
+            WriteColor("Best genes", new string(ga.BestGenes));
+            WriteColor("Best fitness", ga.BestFitness.ToString(), ColorMapper(ga.BestFitness));
+            WriteColor("Generation", ga.Generation.ToString());
+            WriteColor("Population", ga.Population.Count.ToString());
 
-            for (int i = 0; i < numTextObjects; i++)
-            {
-                textList.Add("");
-            }
         }
-
-        private void UpdateText(char[] bestGenes, float bestFitness, int generation, int populationSize, Func<int, char[]> getGenes)
-        {
-            for (int i = 0; i < textList.Count; i++)
-            {
-                var sb = new StringBuilder();
-                int endIndex = i == textList.Count - 1 ? populationSize : (i + 1) * numCharsPerTextObj;
-                for (int j = i * numCharsPerTextObj; j < endIndex; j++)
-                {
-                    foreach (var c in getGenes(j))
-                    {
-                        sb.Append(c);
-                    }
-                    if (j < endIndex - 1) sb.AppendLine();
-                }
-
-                textList[i] = sb.ToString();
-            }
-        }
-
         private ConsoleColor ColorMapper(float fitness)
         {
-            if(fitness < 0.2)
+            if (fitness < 0.2)
             {
                 return ConsoleColor.DarkRed;
             }
