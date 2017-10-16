@@ -13,7 +13,7 @@ namespace GeneticAlgorithm
 
         private string targetString; // The desired child
         private bool verbose;
-
+        
         private GeneticAlgorithm<char> ga;
         private Random random;
 
@@ -68,6 +68,7 @@ namespace GeneticAlgorithm
             return score;
         }
 
+        #region UI
         private void UpdateUserInterface()
         {
 
@@ -118,5 +119,6 @@ namespace GeneticAlgorithm
             Console.WriteLine(value);
             Console.ResetColor();
         }
+        #endregion
     }
 }
